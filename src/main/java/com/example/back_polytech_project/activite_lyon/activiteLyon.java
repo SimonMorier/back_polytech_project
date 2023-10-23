@@ -26,6 +26,7 @@ public class activiteLyon {
     private String illustrations;
     private Double lon;
     private Double lat;
+    
     public Long getId() {
         return id;
     }
