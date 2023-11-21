@@ -16,6 +16,7 @@ import com.example.back_polytech_project.activite_lyon.utils.Location;
 
 
 @CrossOrigin(origins ="http://localhost:4200", allowedHeaders = "*")
+
 @RestController
 @RequestMapping(path="api/v1/activite")
 public class activiteLyonController{
@@ -48,6 +49,19 @@ public class activiteLyonController{
         return new ApiResponse(locationArray);
     }
     
+
+    @GetMapping(path="coords/filtred/InRadius")
+    public ApiResponse getActiviteFiltredInRadius(
+        @RequestParam(required = true) Double lat,
+        @RequestParam(required = true) Double lon,
+        @RequestParam(required = true) Double radius
+    )
+    {
+        return new ApiResponse(activiteLyonService.getActiviteLyonFiltredByRadius(lat, lon, radius));
+    }
+
+
+
     //GET not empty prices 
-    //GET liste activites with prices between in interval
+    //GET liste activites with prices in interval
 }

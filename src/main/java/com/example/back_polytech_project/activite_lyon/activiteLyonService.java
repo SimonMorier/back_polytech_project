@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.back_polytech_project.activite_lyon.utils.Location;
+import com.example.back_polytech_project.activite_lyon.utils.Utils;
 
 @CrossOrigin(origins ="http://localhost:4200", allowedHeaders = "*")
 @Service
@@ -39,12 +40,26 @@ public class activiteLyonService {
     }
 
     public List<Location> getCoordsArray() {
-    List<activiteLyon> list = activiteLyonRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
+        List<activiteLyon> list = activiteLyonRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
 
-    List<Location> result = list.stream()
-        .map(activite -> new Location(activite.getId(), activite.getLat(), activite.getLon()))
-        .collect(Collectors.toList());
+        List<Location> result = list.stream()
+            .map(activite -> new Location(activite.getId(), activite.getLat(), activite.getLon()))
+            .collect(Collectors.toList());
 
-    return result;
+        return result;
 }
+
+    public List<Location> getActiviteLyonFiltredByRadius(Double lat, Double lon, Double radius) {
+        List<Location> ListeCoordonneesEnDB = this.getCoordsArray();
+
+         // Filtrer les locations dans le rayon en utilisant la distance haversine
+         List<Location> result = ListeCoordonneesEnDB.stream()
+                    .filter(location -> Utils.haversine(lat, lon, location.getLat(), location.getLon()) <= radius)
+                    .collect(Collectors.toList());
+
+        return result;
+    }
+
+
+    
 }
