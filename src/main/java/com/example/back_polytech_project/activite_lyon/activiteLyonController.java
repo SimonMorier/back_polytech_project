@@ -50,8 +50,9 @@ public class activiteLyonController{
     }
     
 
+    
     @GetMapping(path="coords/filtred/InRadius")
-    public ApiResponse getActiviteFiltredInRadius(
+    public ApiResponse getCooFiltredInRadius(
         @RequestParam(required = true) Double lat,
         @RequestParam(required = true) Double lon,
         @RequestParam(required = true) Double radius
@@ -61,6 +62,20 @@ public class activiteLyonController{
     }
 
 
+    @GetMapping(path="coords/filtred/InPriceRange")
+        public ApiResponse getCooFiltredInPriceRange(
+            @RequestParam(required = true) Double max,
+            @RequestParam(required = true) Double min
+        ){
+            return new ApiResponse(activiteLyonService.getCooFiltredInPriceRange(max,min));
+        }
+
+    @GetMapping(path="coords/filtred/ByActivityTheme")
+        public ApiResponse getCooFiltredByActivityTheme(
+            @RequestParam(required = true) String activityTheme
+        ){
+            return new ApiResponse(activiteLyonService.getCooFiltredByActivityTheme(activityTheme));
+        }
 
     //GET not empty prices 
     //GET liste activites with prices in interval
