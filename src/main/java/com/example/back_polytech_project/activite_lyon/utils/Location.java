@@ -1,5 +1,7 @@
 package com.example.back_polytech_project.activite_lyon.utils;
 
+import java.util.Objects;
+
 public class Location {
     private Long id;
     private double lat;
@@ -28,6 +30,29 @@ public class Location {
     }
     public void setLon(double lon) {
         this.lon = lon;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Location location = (Location) o;
+        return id == location.id &&
+                Double.compare(location.lon, lon) == 0 &&
+                Double.compare(location.lat, lat) == 0;
+    }
+       @Override
+    public int hashCode() {
+        return Objects.hash(id, lon, lat);
+    }
+
+    @Override
+    public String toString() {
+        return "Location{" +
+                "id=" + id +
+                ", lon=" + lon +
+                ", lat=" + lat +
+                '}';
     }
 
 }

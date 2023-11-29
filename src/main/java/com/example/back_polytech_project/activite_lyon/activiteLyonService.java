@@ -80,14 +80,14 @@ public class activiteLyonService {
         return result;
     }
 
-    public List<Location> getCooFiltredByActivityTheme(String activityType) {
+    public List<Location> getCooFiltredByActivityTheme(String activityTheme) {
         List<activiteLyon> activiteLyonsInDb = this.getActiviteLyon(Optional.empty());
         List<activiteLyon> filtredList = activiteLyonsInDb.stream()
                 .filter(activiteLyon -> {
                     try {
                         String[]  themeArray = activiteLyon.getTheme().replaceAll("[\\[\\]']", "").split(",\\s*");
                         List<String> themeList = Arrays.asList(themeArray);
-                        return themeList.contains(activityType);
+                        return themeList.contains(activityTheme);
                     } catch (Exception e) {
                         e.printStackTrace();
                         return false;
@@ -100,6 +100,27 @@ public class activiteLyonService {
                 .collect(Collectors.toList());
 
         return result;
+    }
+
+    public Object getCooFiltred(Optional<Double> lat,
+                                Optional<Double> lon, 
+                                Optional<Double> radius,
+                                Optional<String>activityTheme,
+                                Optional<Double> max,
+                                Optional<Double> min) {
+
+        List<Location> list = this.getCoordsArray();
+        System.out.println(list.size());
+        if(activityTheme.isPresent()){
+            list = Utils.filterIntersection(list,this.getCooFiltredByActivityTheme(activityTheme.get()));
+        }
+        if(max.isPresent() && min.isPresent()){
+            list = Utils.filterIntersection(list,this.getCooFiltredInPriceRange(max.get(), min.get()));
+        }
+        if(lat.isPresent() && lon.isPresent() && radius.isPresent()){
+            list = Utils.filterIntersection(list,this.getActiviteLyonFiltredByRadius(lat.get(), lon.get(), radius.get()));
+        }                            
+        return list;
     }
 
     

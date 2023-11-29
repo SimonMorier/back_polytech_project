@@ -1,5 +1,8 @@
 package com.example.back_polytech_project.activite_lyon.utils;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class Utils {
     // Méthode pour calculer la distance haversine entre deux points géographiques
     public static double haversine(double lat1, double lon1, double lat2, double lon2) {
@@ -19,5 +22,13 @@ public class Utils {
 
         // Distance haversine
         return R * c;
+    }
+
+
+    public static List<Location> filterIntersection(List<Location> L1, List<Location> L2){
+        System.out.println(L2.size());
+        return L1.stream()
+            .filter(L2::contains)
+            .collect(Collectors.toList());
     }
 }

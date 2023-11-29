@@ -77,6 +77,17 @@ public class activiteLyonController{
             return new ApiResponse(activiteLyonService.getCooFiltredByActivityTheme(activityTheme));
         }
 
-    //GET not empty prices 
-    //GET liste activites with prices in interval
+
+         @GetMapping(path="coords/filtred")
+        public ApiResponse getCooFiltred(
+            @RequestParam(required = false) Optional<Double> lat,
+            @RequestParam(required = false) Optional<Double> lon,
+            @RequestParam(required = false) Optional<Double> radius,
+            @RequestParam(required = false) Optional<String> activityTheme,
+            @RequestParam(required = false) Optional<Double> max,
+            @RequestParam(required = false) Optional<Double> min
+        ){
+            return new ApiResponse(activiteLyonService.getCooFiltred(lat, lon, radius, activityTheme, max, min));
+        }
+
 }
