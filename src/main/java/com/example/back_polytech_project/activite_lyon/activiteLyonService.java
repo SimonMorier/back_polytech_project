@@ -31,7 +31,7 @@ public class activiteLyonService {
 
     public List<activiteLyon> getActiviteLyon(Optional<Boolean> filterTarifs){
         List<activiteLyon> list = new ArrayList<>();
-        if(filterTarifs.isPresent()){
+        if(filterTarifs.isPresent() && filterTarifs.get()){
             return activiteLyonRepository.findActivteLyonWithPricesNotNull();
         }else{
             list = activiteLyonRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
@@ -65,12 +65,21 @@ public class activiteLyonService {
         return result;
     }
 
-    public List<Location> getCooFiltredInPriceRange(Double max, Double min) {
-        Optional<Boolean> tarifs = Optional.of(true);
-        List<activiteLyon> activiteLyonsInDb = this.getActiviteLyon(tarifs);
-    
+    public List<Location> getCooFiltredInPriceRange(Double max, Double min, Boolean isPricerequired) {
+        Optional<Boolean> avecTarifs = Optional.of(isPricerequired);
+        List<activiteLyon> activiteLyonsInDb = this.getActiviteLyon(avecTarifs);
+       
+        
         List<activiteLyon> filtredList = activiteLyonsInDb.stream()
-                .filter(activiteLyon -> activiteLyon.getTarifmax() <= max && activiteLyon.getTarifmin() > min)
+                .filter(activiteLyon ->  {
+                    // Inclure les activités avec des champs min et max null si isPriceRequired est à false
+                    if (!isPricerequired) {
+                        return activiteLyon.getTarifmax() == null || activiteLyon.getTarifmin() == null;
+                    }
+                    // Sinon, appliquer le filtrage normal
+                    return activiteLyon.getTarifmax() != null && activiteLyon.getTarifmin() <= max
+                            && activiteLyon.getTarifmin() != null && activiteLyon.getTarifmin() > min;
+                })
                 .collect(Collectors.toList());
     
         List<Location> result = this.getCoordsArray().stream()
@@ -80,14 +89,18 @@ public class activiteLyonService {
         return result;
     }
 
-    public List<Location> getCooFiltredByActivityTheme(String activityTheme) {
+    public List<Location> getCooFiltredByActivityTheme(List<String> activityThemes) {
+       // Remplacer " et " par "&" dans chaque élément de la liste
+        List<String> modifiedActivityThemes = activityThemes.stream()
+            .map(theme -> theme.replace(" et ", "&"))
+            .collect(Collectors.toList());
         List<activiteLyon> activiteLyonsInDb = this.getActiviteLyon(Optional.empty());
         List<activiteLyon> filtredList = activiteLyonsInDb.stream()
                 .filter(activiteLyon -> {
                     try {
                         String[]  themeArray = activiteLyon.getTheme().replaceAll("[\\[\\]']", "").split(",\\s*");
                         List<String> themeList = Arrays.asList(themeArray);
-                        return themeList.contains(activityTheme);
+                        return themeList.stream().anyMatch(modifiedActivityThemes::contains);
                     } catch (Exception e) {
                         e.printStackTrace();
                         return false;
@@ -102,12 +115,17 @@ public class activiteLyonService {
         return result;
     }
 
-    public Object getCooFiltred(Optional<Double> lat,
+    //Recevoir array d'activite
+    //Ne pas avoir de filtrage si array vide.
+    
+
+    public List<Location> getCooFiltred(Optional<Double> lat,
                                 Optional<Double> lon, 
                                 Optional<Double> radius,
-                                Optional<String>activityTheme,
+                                Optional<List<String>>activityTheme,
                                 Optional<Double> max,
-                                Optional<Double> min) {
+                                Optional<Double> min,
+                                Optional<Boolean> isPriceRequired) {
 
         List<Location> list = this.getCoordsArray();
         System.out.println(list.size());
@@ -115,7 +133,7 @@ public class activiteLyonService {
             list = Utils.filterIntersection(list,this.getCooFiltredByActivityTheme(activityTheme.get()));
         }
         if(max.isPresent() && min.isPresent()){
-            list = Utils.filterIntersection(list,this.getCooFiltredInPriceRange(max.get(), min.get()));
+            list = Utils.filterIntersection(list,this.getCooFiltredInPriceRange(max.get(), min.get(), isPriceRequired.get()));
         }
         if(lat.isPresent() && lon.isPresent() && radius.isPresent()){
             list = Utils.filterIntersection(list,this.getActiviteLyonFiltredByRadius(lat.get(), lon.get(), radius.get()));
@@ -123,5 +141,23 @@ public class activiteLyonService {
         return list;
     }
 
+    public List<String> getThemeArray() {       
+        List<String> themeList = activiteLyonRepository.findDistinctThemes();
+        return themeList.stream()
+        // Supprimer les caractères non nécessaires et diviser les thèmes en une liste
+        .map(theme -> theme.replaceAll("[\\[\\]']", "").split(",\\s*"))
+        // Aplatir la liste de listes de thèmes
+        .flatMap(array -> Arrays.stream(array))
+        // Supprimer les espaces supplémentaires
+        .map(String::trim)
+        // Remplacer '@' par " et "
+        .map(theme -> theme.replace("&", " et "))
+        // Filtrer les thèmes vides
+        .filter(theme -> !theme.isEmpty())
+        // Collecter les thèmes distincts
+        .distinct()
+        // Collecter les résultats dans une liste
+        .collect(Collectors.toList());
+    }
     
 }
