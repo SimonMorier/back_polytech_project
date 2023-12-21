@@ -81,6 +81,12 @@ public class activiteLyonController{
         ){
             return new ApiResponse(activiteLyonService.getCooFiltredByActivityTheme(activityTheme));
         }
+        @GetMapping(path="activite/filtred/ByActivityTheme")
+        public ApiResponse getActiviteFiltredByActivityTheme(
+            @RequestParam(required = true) List<String> activityTheme
+        ){
+            return new ApiResponse(activiteLyonService.getActiviteFiltredByActivityTheme(activityTheme));
+        }
 
 
          @GetMapping(path="coords/filtred")

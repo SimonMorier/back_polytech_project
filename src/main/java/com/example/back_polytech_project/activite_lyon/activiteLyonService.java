@@ -159,5 +159,33 @@ public class activiteLyonService {
         // Collecter les résultats dans une liste
         .collect(Collectors.toList());
     }
+
+    public List<activiteLyon> getActiviteFiltredByActivityTheme(List<String> activityThemes) {
+       // Remplacer " et " par "&" dans chaque élément de la liste
+        List<String> modifiedActivityThemes = activityThemes.stream()
+            .map(theme -> theme.replace(" et ", "&"))
+            .collect(Collectors.toList());
+        List<activiteLyon> activiteLyonsInDb = this.getActiviteLyon(Optional.empty());
+        List<activiteLyon> filtredList = activiteLyonsInDb.stream()
+                .filter(activiteLyon -> {
+                    try {
+                        String[]  themeArray = activiteLyon.getTheme().replaceAll("[\\[\\]']", "").split(",\\s*");
+                        List<String> themeList = Arrays.asList(themeArray);
+                        return themeList.stream().anyMatch(modifiedActivityThemes::contains);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                })
+                .collect(Collectors.toList());
+        
+        if(!modifiedActivityThemes.isEmpty()){
+            return filtredList;
+        }
+        else {
+            return activiteLyonsInDb;
+        }
+        
+    }
     
 }
