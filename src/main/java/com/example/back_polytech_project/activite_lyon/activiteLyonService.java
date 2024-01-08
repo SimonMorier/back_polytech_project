@@ -74,7 +74,7 @@ public class activiteLyonService {
                 .filter(activiteLyon ->  {
                     // Inclure les activités avec des champs min et max null si isPriceRequired est à false
                     if (!isPricerequired) {
-                        return activiteLyon.getTarifmax() == null || activiteLyon.getTarifmin() == null;
+                        return true;
                     }
                     // Sinon, appliquer le filtrage normal
                     return activiteLyon.getTarifmax() != null && activiteLyon.getTarifmin() <= max
