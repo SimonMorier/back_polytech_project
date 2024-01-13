@@ -20,6 +20,8 @@ import com.example.back_polytech_project.activite_lyon.utils.Utils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.micrometer.common.util.StringUtils;
+
 @CrossOrigin(origins ="http://localhost:4200", allowedHeaders = "*")
 @Service
 public class activiteLyonService {
@@ -188,4 +190,26 @@ public class activiteLyonService {
         
     }
     
+
+
+    public List<activiteLyon> searchActiviteLyons(String keyword) {
+        // Ajoutez une vérification pour les chaînes vides ou nulles
+        if (StringUtils.isBlank(keyword)) {
+            // Vous pouvez choisir de retourner toutes les activités ou une liste vide
+            return activiteLyonRepository.findAll();
+        }
+
+        // Implémentez la logique de recherche en utilisant le repository
+        return activiteLyonRepository.findByNomContainingIgnoreCase(keyword);
+    }
+
+
+    public List<activiteLyon> searchActiviteLyonWithCategories(String keyword,List<String> activityThemes){
+        List<activiteLyon> ListActByTheme = this.getActiviteFiltredByActivityTheme(activityThemes);
+        List<activiteLyon> ListWithKeyWord = this.searchActiviteLyons(keyword);
+
+        return Utils.filterIntersectionAct(ListActByTheme, ListWithKeyWord);
+    
+    }
 }
+

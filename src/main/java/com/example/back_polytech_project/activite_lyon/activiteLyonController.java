@@ -4,6 +4,7 @@ package com.example.back_polytech_project.activite_lyon;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -101,5 +102,21 @@ public class activiteLyonController{
         ){
             return new ApiResponse(activiteLyonService.getCooFiltred(lat, lon, radius, activityTheme, max, min, isPriceRequired));
         }
+
+    //     @GetMapping("/search")
+    // public ApiResponse searchLocations(@RequestParam String keyword) {
+    //     List<activiteLyon> searchResult = activiteLyonService.searchActiviteLyons(keyword);
+    //     return new ApiResponse(searchResult);
+    // }
+
+    @GetMapping("/search")
+    public ApiResponse searchLocations(
+        @RequestParam String keyword,
+        @RequestParam(required = true) List<String> activityTheme ) 
+        {
+            List<activiteLyon> searchResult = activiteLyonService.searchActiviteLyonWithCategories(keyword, activityTheme);
+            return new ApiResponse(searchResult);
+        }
+    
 
 }

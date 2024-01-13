@@ -3,6 +3,10 @@ package com.example.back_polytech_project.activite_lyon.utils;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.catalina.authenticator.SpnegoAuthenticator.AcceptAction;
+
+import com.example.back_polytech_project.activite_lyon.activiteLyon;
+
 public class Utils {
     // Méthode pour calculer la distance haversine entre deux points géographiques
     public static double haversine(double lat1, double lon1, double lat2, double lon2) {
@@ -26,6 +30,13 @@ public class Utils {
 
 
     public static List<Location> filterIntersection(List<Location> L1, List<Location> L2){
+        System.out.println(L2.size());
+        return L1.stream()
+            .filter(L2::contains)
+            .collect(Collectors.toList());
+    }
+
+    public static List<activiteLyon> filterIntersectionAct(List<activiteLyon> L1, List<activiteLyon> L2){
         System.out.println(L2.size());
         return L1.stream()
             .filter(L2::contains)
