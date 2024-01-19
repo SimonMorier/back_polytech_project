@@ -3,8 +3,6 @@ package com.example.back_polytech_project.activite_lyon.utils;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.catalina.authenticator.SpnegoAuthenticator.AcceptAction;
-
 import com.example.back_polytech_project.activite_lyon.activiteLyon;
 
 public class Utils {
@@ -20,7 +18,7 @@ public class Utils {
         // Formule haversine
         double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
                 + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                        * Math.sin(dLon / 2) * Math.sin(dLon / 2);
 
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
@@ -28,18 +26,17 @@ public class Utils {
         return R * c;
     }
 
-
-    public static List<Location> filterIntersection(List<Location> L1, List<Location> L2){
+    public static List<Location> filterIntersection(List<Location> L1, List<Location> L2) {
         System.out.println(L2.size());
         return L1.stream()
-            .filter(L2::contains)
-            .collect(Collectors.toList());
+                .filter(L2::contains)
+                .collect(Collectors.toList());
     }
 
-    public static List<activiteLyon> filterIntersectionAct(List<activiteLyon> L1, List<activiteLyon> L2){
+    public static List<activiteLyon> filterIntersectionAct(List<activiteLyon> L1, List<activiteLyon> L2) {
         System.out.println(L2.size());
         return L1.stream()
-            .filter(L2::contains)
-            .collect(Collectors.toList());
+                .filter(L2::contains)
+                .collect(Collectors.toList());
     }
 }
